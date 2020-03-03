@@ -267,6 +267,52 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&ctp_pwr_en_default>;
 	};
+
+	reg_cam_avdd: regualtor-cam-avdd {
+		compatible = "regulator-fixed";
+		regulator-name = "cam-avdd";
+
+		regulator-min-microvolt = <2800000>;
+		regulator-max-microvolt = <2800000>;
+
+		gpio = <&msmgpio 119 0>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&cam_avdd_pwr_en_default>;
+	};
+
+	reg_main_cam_dvdd: regualtor-main-cam-dvdd {
+		compatible = "regulator-fixed";
+		regulator-name = "main-cam-dvdd";
+
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+
+		vin-supply = <&pm8916_s4>;
+
+		gpio = <&msmgpio 118 0>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&main_cam_dvdd_pwr_en_default>;
+	};
+
+	reg_sub_cam_dvdd: regualtor-sub-cam-dvdd {
+		compatible = "regulator-fixed";
+		regulator-name = "sub-cam-dvdd";
+
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+
+		vin-supply = <&pm8916_s4>;
+
+		gpio = <&msmgpio 117 0>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&sub_cam_dvdd_pwr_en_default>;
+	};
 };
 
 &blsp_i2c2 {
@@ -379,6 +425,42 @@
 		};
 		pinconf {
 			pins = "gpio17";
+			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
+	cam_avdd_pwr_en_default: cam_avdd_pwr_en_default {
+		pinmux {
+			function = "gpio";
+			pins = "gpio119";
+		};
+		pinconf {
+			pins = "gpio119";
+			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
+	main_cam_dvdd_pwr_en_default: main_cam_dvdd_pwr_en_default {
+		pinmux {
+			function = "gpio";
+			pins = "gpio118";
+		};
+		pinconf {
+			pins = "gpio118";
+			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
+	sub_cam_dvdd_pwr_en_default: sub_cam_dvdd_pwr_en_default {
+		pinmux {
+			function = "gpio";
+			pins = "gpio117";
+		};
+		pinconf {
+			pins = "gpio117";
 			drive-strength = <2>;
 			bias-disable;
 		};
