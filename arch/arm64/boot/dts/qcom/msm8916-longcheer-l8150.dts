@@ -274,6 +274,7 @@
 
 		regulator-min-microvolt = <2800000>;
 		regulator-max-microvolt = <2800000>;
+		//regulator-always-on;
 
 		gpio = <&msmgpio 119 0>;
 		enable-active-high;
@@ -288,6 +289,7 @@
 
 		regulator-min-microvolt = <1200000>;
 		regulator-max-microvolt = <1200000>;
+		//regulator-always-on;
 
 		vin-supply = <&pm8916_s4>;
 
@@ -296,6 +298,21 @@
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&main_cam_dvdd_pwr_en_default>;
+	};
+
+	reg_main_cam_force: regualtor-main-cam-force {
+		compatible = "regulator-fixed";
+		regulator-name = "main-cam-force";
+
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		//regulator-always-on;
+
+		gpio = <&msmgpio 35 0>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&main_cam_force_pwr_en_default>;
 	};
 
 	reg_sub_cam_dvdd: regualtor-sub-cam-dvdd {
@@ -381,6 +398,27 @@
 	};
 };
 
+&camss {
+	status = "okay";
+
+	/*ports {
+		port@0 {
+			reg = <0>;
+			csiphy0_ep: endpoint {
+				clock-lanes = <1>;
+				data-lanes = <0 2 3 4>;
+				//remote-endpoint = <>;
+			};
+		};
+	};*/
+};
+
+&soc {
+	cci@1b0c000 {
+		status = "okay";
+	};
+};
+
 &dsi0 {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&mdss_default>;
@@ -454,6 +492,18 @@
 		};
 	};
 
+	main_cam_force_pwr_en_default: main_cam_force_pwr_en_default {
+		pinmux {
+			function = "gpio";
+			pins = "gpio35";
+		};
+		pinconf {
+			pins = "gpio35";
+			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
 	sub_cam_dvdd_pwr_en_default: sub_cam_dvdd_pwr_en_default {
 		pinmux {
 			function = "gpio";
@@ -462,6 +512,18 @@
 		pinconf {
 			pins = "gpio117";
 			drive-strength = <2>;
+			bias-disable;
+		};
+	};
+
+	cci0_default: cci0_default {
+		pinmux {
+			function = "cci_i2c";
+			pins = "gpio29", "gpio30";
+		};
+		pinconf {
+			pins = "gpio29", "gpio30";
+			drive-strength = <16>;
 			bias-disable;
 		};
 	};
