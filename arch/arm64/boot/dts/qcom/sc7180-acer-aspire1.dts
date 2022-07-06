@@ -103,6 +103,10 @@
 	};
 };
 
+&camcc {
+	status = "disabled";
+};
+
 &sdhc_1 {
 	status = "okay";
 
