@@ -13,6 +13,7 @@
 / {
 	model = "Acer Aspire 1";
 	compatible = "acer,aspire1", "qcom,sc7180";
+	chassis-type = "laptop";
 	/* Aspire 1 A114-61 series, model no. N20Q7 */
 
 	reserved-memory {
@@ -30,6 +31,50 @@
 			reg = <0x0 0x94100000 0x0 0x200000>;
 			no-map;
 		};
+	};
+
+	reg_tp_3p3: touchpad-regulator {
+		compatible = "regulator-fixed";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+
+		gpio = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&reg_tp_en_default>;
+	};
+};
+
+&pm6150_adc {
+	thermistor@4e {
+		reg = <ADC5_AMUX_THM2_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+	};
+
+	charger-thermistor@4f {
+		reg = <ADC5_AMUX_THM3_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time = <200>;
+	};
+};
+
+&pm6150_adc_tm {
+	status = "okay";
+
+	charger-thermistor@0 {
+		reg = <0>;
+		io-channels = <&pm6150_adc ADC5_AMUX_THM3_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
+	};
+
+	thermistor@1 {
+		reg = <1>;
+		io-channels = <&pm6150_adc ADC5_AMUX_THM2_100K_PU>;
+		qcom,ratiometric;
+		qcom,hw-settle-time-us = <200>;
 	};
 };
 
@@ -52,6 +97,8 @@
 		compatible = "hid-over-i2c";
 		reg = <0x2c>;
 		hid-descr-addr = <0x20>;
+
+		vdd-supply = <&reg_tp_3p3>;
 
 		interrupts-extended = <&tlmm 94 IRQ_TYPE_LEVEL_LOW>;
 
@@ -298,6 +345,13 @@
 
 	hid_touchpad_active: hid-touchpad-active {
 		pins = "gpio94";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	reg_tp_en_default: reg-tp-en-deault {
+		pins = "gpio25";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
