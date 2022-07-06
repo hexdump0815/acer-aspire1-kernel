@@ -174,7 +174,7 @@
 	status = "okay";
 	clock-frequency = <400000>;
 
-	sn65dsi86_bridge: bridge@2d {
+	sn65dsi86_bridge: bridge@2c {
 		compatible = "ti,sn65dsi86";
 		reg = <0x2c>;
 		pinctrl-names = "default";
@@ -223,7 +223,7 @@
 
 		aux-bus {
 			panel: panel {
-				compatible = "boe,nv140fhmn49";
+				compatible = "edp-panel";
 				power-supply = <&reg_lcm_3p3>;
 				backlight = <&backlight>;
 				//hpd-gpios = <&sn65dsi86_bridge 2 GPIO_ACTIVE_HIGH>;
