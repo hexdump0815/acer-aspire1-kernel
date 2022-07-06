@@ -103,7 +103,7 @@
 		interrupts-extended = <&tlmm 94 IRQ_TYPE_LEVEL_LOW>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&hid_touchpad_active>;
+		pinctrl-0 = <&hid_touchpad_default>;
 	};
 
 	keyboard@3a {
@@ -114,7 +114,7 @@
 		interrupts-extended = <&tlmm 33 IRQ_TYPE_LEVEL_LOW>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&hid_keyboard_active>;
+		pinctrl-0 = <&hid_keyboard_default>;
 	};
 };
 
@@ -336,14 +336,14 @@
 	 */
 	gpio-reserved-ranges = <58 5>;
 
-	hid_keyboard_active: hid-keyboard-active {
+	hid_keyboard_default: hid-keyboard-default {
 		pins = "gpio33";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
 	};
 
-	hid_touchpad_active: hid-touchpad-active {
+	hid_touchpad_default: hid-touchpad-default {
 		pins = "gpio94";
 		function = "gpio";
 		drive-strength = <2>;
