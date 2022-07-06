@@ -120,7 +120,7 @@ int __init efi_set_mapping_permissions(struct mm_struct *mm,
  */
 bool efi_poweroff_required(void)
 {
-	return efi_enabled(EFI_RUNTIME_SERVICES);
+	return false; //efi_enabled(EFI_RUNTIME_SERVICES);
 }
 
 asmlinkage efi_status_t efi_handle_corrupted_x18(efi_status_t s, const char *f)
