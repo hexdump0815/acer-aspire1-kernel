@@ -17,6 +17,12 @@
 	/* Aspire 1 A114-61 series, model no. N20Q7 */
 
 	reserved-memory {
+
+		gpu_mem: memory@8c515000 {
+			reg = <0 0x8c515000 0 0x2000>;
+			no-map;
+		};
+
 		mpss_mem: memory@86000000 {
 			reg = <0x0 0x86000000 0x0 0x2000000>;
 			no-map;
@@ -35,6 +41,7 @@
 
 	reg_tp_3p3: touchpad-regulator {
 		compatible = "regulator-fixed";
+		regulator-name = "tp_3p3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 
@@ -43,6 +50,87 @@
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&reg_tp_en_default>;
+	};
+
+	reg_lcm_3p3: panel-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "lcm_3p3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+
+		gpio = <&tlmm 26 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&reg_lcm_en_default>;
+	};
+
+	reg_brij_1p8: bridge-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "brij_1p8";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+
+		vin-supply = <&vreg_l8c_1p8>;
+
+		gpio = <&tlmm 20 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&reg_edp_1p8_en_default>;
+	};
+
+	reg_brij_1p2: bridge-1p2-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "brij_1p2";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+
+		gpio = <&tlmm 19 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&reg_edp_1p2_en_default>;
+	};
+
+	backlight: backlight {
+		compatible = "pwm-backlight";
+		pwms = <&sn65dsi86_bridge 1000000>;
+		enable-gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&soc_bkoff_default>;
+	};
+};
+
+&dsi0 {
+	status = "okay";
+	vdda-supply = <&vreg_l3c_1p2>;
+};
+
+&dsi0_out {
+	remote-endpoint = <&sn65dsi86_in>;
+	data-lanes = <0 1 2 3>;
+};
+
+&dsi_phy {
+	status = "okay";
+	vdds-supply = <&vreg_l4a_0p8>;
+};
+
+&mdp {
+	status = "okay";
+};
+
+&mdss {
+	status = "okay";
+};
+
+&gpu {
+	status = "okay";
+	zap-shader {
+		memory-region = <&gpu_mem>;
+		firmware-name = "qcom/a630_zap.mdt";
 	};
 };
 
@@ -82,6 +170,74 @@
 	status = "disabled";
 };
 
+&i2c10 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	sn65dsi86_bridge: bridge@2d {
+		compatible = "ti,sn65dsi86";
+		reg = <0x2c>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&bridge_en_default>,
+			<&edp_bridge_irq_default>/*,
+			<&bridge_suspend_default>*/;
+		gpio-controller;
+		#gpio-cells = <2>;
+		#pwm-cells = <1>;
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <11 IRQ_TYPE_LEVEL_HIGH>;
+
+		enable-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		//suspend-gpios = <&tlmm 22 GPIO_ACTIVE_LOW>;
+
+		vpll-supply = <&reg_brij_1p8>;
+		vccio-supply = <&reg_brij_1p8>;
+		vcca-supply = <&reg_brij_1p2>;
+		vcc-supply = <&reg_brij_1p2>;
+
+		clocks = <&rpmhcc RPMH_LN_BB_CLK3>;
+		clock-names = "refclk";
+
+		no-hpd;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				sn65dsi86_in: endpoint {
+					remote-endpoint = <&dsi0_out>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				sn65dsi86_out: endpoint {
+					data-lanes = <0 1>;
+					remote-endpoint = <&panel_in_edp>;
+				};
+			};
+		};
+
+		aux-bus {
+			panel: panel {
+				compatible = "boe,nv140fhmn49";
+				power-supply = <&reg_lcm_3p3>;
+				backlight = <&backlight>;
+				//hpd-gpios = <&sn65dsi86_bridge 2 GPIO_ACTIVE_HIGH>;
+
+				port {
+					panel_in_edp: endpoint {
+						remote-endpoint = <&sn65dsi86_out>;
+					};
+				};
+			};
+		};
+	};
+};
+
 &i2c4 {
 	status = "okay";
 	clock-frequency = <400000>;
@@ -119,6 +275,10 @@
 };
 
 &qupv3_id_0 {
+	status = "okay";
+};
+
+&qupv3_id_1 {
 	status = "okay";
 };
 
@@ -343,6 +503,27 @@
 		bias-disable;
 	};
 
+	bridge_en_default: bridge-en-default {
+		pins = "gpio51";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
+	edp_bridge_irq_default: edp-bridge-irq-default {
+		pins = "gpio11";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	bridge_suspend_default: bridge-suspend-default {
+		pins = "gpio22";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-pull-up;
+	};
+
 	hid_touchpad_default: hid-touchpad-default {
 		pins = "gpio94";
 		function = "gpio";
@@ -350,10 +531,38 @@
 		bias-disable;
 	};
 
+	reg_edp_1p2_en_default: reg-edp-1p2-en-deault {
+		pins = "gpio19";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
+	reg_edp_1p8_en_default: reg-edp-1p8-en-deault {
+		pins = "gpio20";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
+	reg_lcm_en_default: reg-lcm-en-deault {
+		pins = "gpio26";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
 	reg_tp_en_default: reg-tp-en-deault {
 		pins = "gpio25";
 		function = "gpio";
 		drive-strength = <2>;
+		bias-disable;
+	};
+
+	soc_bkoff_default: soc-bkoff-deault {
+		pins = "gpio10";
+		function = "gpio";
+		drive-strength = <16>;
 		bias-disable;
 	};
 };
