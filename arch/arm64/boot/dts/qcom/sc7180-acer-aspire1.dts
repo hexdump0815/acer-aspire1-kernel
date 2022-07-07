@@ -265,7 +265,7 @@
 				compatible = "edp-panel";
 				power-supply = <&reg_lcm_3p3>;
 				backlight = <&backlight>;
-				//hpd-gpios = <&sn65dsi86_bridge 2 GPIO_ACTIVE_HIGH>;
+				hpd-reliable-delay-ms = <15>;
 
 				port {
 					panel_in_edp: endpoint {
