@@ -169,6 +169,12 @@
 	};
 };
 
+&venus {
+	video-firmware {
+		iommus = <&apps_smmu 0x0c42 0x0>;
+	};
+};
+
 /* Seems like ADSP really insists on managing those itself */
 &lpasscc { status = "disabled"; };
 &lpass_hm { status = "disabled"; };
