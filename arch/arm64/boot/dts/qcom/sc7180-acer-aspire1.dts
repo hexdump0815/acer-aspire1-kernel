@@ -213,7 +213,7 @@
 		clocks = <&rpmhcc RPMH_LN_BB_CLK3>;
 		clock-names = "refclk";
 
-		no-hpd;
+		//no-hpd;
 
 		ports {
 			#address-cells = <1>;
