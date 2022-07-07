@@ -52,6 +52,19 @@
 		pinctrl-0 = <&reg_tp_en_default>;
 	};
 
+	reg_codec_3p3: codec-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "codec_3p3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+
+		gpio = <&tlmm 83 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&reg_audio_en_default>;
+	};
+
 	reg_lcm_3p3: panel-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "lcm_3p3";
@@ -101,7 +114,19 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&soc_bkoff_default>;
 	};
+
+	max98357a: audio-codec-0 {
+		compatible = "maxim,max98357a";
+		pinctrl-names = "default";
+		pinctrl-0 = <&amp_sd_mode_default>;
+		sdmode-gpios = <&tlmm 23 GPIO_ACTIVE_HIGH>;
+		#sound-dai-cells = <0>;
+	};
 };
+
+/* Seems like ADSP really insists on managing those itself */
+&lpasscc { status = "disabled"; };
+&lpass_hm { status = "disabled"; };
 
 &camcc {
 	status = "disabled";
@@ -285,6 +310,35 @@
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&hid_keyboard_default>;
+	};
+};
+
+&i2c9 {
+	status = "okay";
+	clock-frequency = <400000>;
+
+	alc5682: codec@1a {
+		compatible = "realtek,rt5682i";
+		reg = <0x1a>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&codec_irq_default>;
+
+		#sound-dai-cells = <1>;
+
+		interrupt-parent = <&tlmm>;
+		/*
+		 * This will get ignored because the interrupt type
+		 * is set in rt5682.c.
+		 */
+		interrupts = <28 IRQ_TYPE_EDGE_BOTH>;
+
+		AVDD-supply = <&vreg_l15a_1p8>;
+		MICVDD-supply = <&reg_codec_3p3>;
+		VBAT-supply = <&reg_codec_3p3>;
+
+		realtek,dmic1-data-pin = <1>;
+		realtek,dmic1-clk-pin = <1>;
+		realtek,jd-src = <1>;
 	};
 };
 
@@ -566,8 +620,22 @@
 		bias-disable;
 	};
 
+	reg_audio_en_default: reg-audio-en-deault {
+		pins = "gpio83";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
 	reg_tp_en_default: reg-tp-en-deault {
 		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	codec_irq_default: codec-irq-deault {
+		pins = "gpio28";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
@@ -578,6 +646,18 @@
 		function = "gpio";
 		drive-strength = <16>;
 		bias-disable;
+	};
+
+	amp_sd_mode_default: amp-sd-mode-deault {
+		pins = "gpio23";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-disable;
+	};
+
+	ter_mi2s_active: ter-mi2s-active {
+		pins = "gpio63", "gpio64", "gpio65";
+		function = "mi2s_2";
 	};
 
 	sdc1_default: sdc1-default {
