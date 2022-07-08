@@ -260,6 +260,10 @@
 	status = "okay";
 	clock-frequency = <400000>;
 	/* Embedded Controller */
+	battery@76 {
+		compatible = "acer,aspire1-battery";
+		reg = <0x76>;
+	};
 };
 
 &i2c10 {
