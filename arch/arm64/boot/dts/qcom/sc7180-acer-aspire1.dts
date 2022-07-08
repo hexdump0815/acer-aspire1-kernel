@@ -76,6 +76,15 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 
+		/* HACK: Display fails with
+		 *
+		 * *ERROR* Unexpected max rate (0x0); assuming 5.4 GHz
+		 * *ERROR* Link training failed, link is off (-5)
+		 *
+		 * if the power to the panel was cut
+		 */
+		regulator-always-on;
+
 		gpio = <&tlmm 26 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 
