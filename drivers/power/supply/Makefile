@@ -109,3 +109,4 @@ obj-$(CONFIG_BATTERY_SURFACE)	+= surface_battery.o
 obj-$(CONFIG_CHARGER_SURFACE)	+= surface_charger.o
 obj-$(CONFIG_BATTERY_UG3105)	+= ug3105_battery.o
 obj-$(CONFIG_SOME_BATTERY) += some-battery.o
+obj-$(CONFIG_ACER_ASPIRE_BATTERY) += aspire-ec-battery.o

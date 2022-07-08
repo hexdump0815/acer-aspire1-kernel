@@ -903,4 +903,10 @@ config SOME_BATTERY
 	help
 	  Of course!
 
+config ACER_ASPIRE_BATTERY
+	tristate "Aspire1 Battery Fuel Gauge"
+	depends on I2C
+	help
+	  Of course!
+
 endif # POWER_SUPPLY
