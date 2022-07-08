@@ -269,6 +269,12 @@
 	status = "disabled";
 };
 
+&i2c2 {
+	status = "okay";
+	clock-frequency = <400000>;
+	/* Embedded Controller */
+};
+
 &i2c10 {
 	status = "okay";
 	clock-frequency = <400000>;
