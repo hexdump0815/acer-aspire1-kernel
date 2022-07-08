@@ -140,9 +140,6 @@
 
 &remoteproc_mpss {
 	status = "okay";
-	compatible = "qcom,sc7180-mss-pil";
-	iommus = <&apps_smmu 0x461 0x0>, <&apps_smmu 0x444 0x3>;
-	memory-region = <&mba_mem &mpss_mem>;
 };
 
 &uart3 {
@@ -172,16 +169,6 @@
 	vdd-1.3-rfa-supply = <&vreg_l2c_1p3>;
 	vdd-3.3-ch0-supply = <&vreg_l10c_3p3>;
 	vdd-3.3-ch1-supply = <&vreg_l11c_3p3>;
-
-	wifi-firmware {
-		iommus = <&apps_smmu 0xc2 0x1>;
-	};
-};
-
-&venus {
-	video-firmware {
-		iommus = <&apps_smmu 0x0c42 0x0>;
-	};
 };
 
 /* Seems like ADSP really insists on managing those itself */
