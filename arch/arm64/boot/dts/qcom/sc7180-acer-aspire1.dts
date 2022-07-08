@@ -612,10 +612,40 @@
 	};
 };
 
+&qup_i2c2_default {
+	pinconf {
+		pins = "gpio15", "gpio16";
+		drive-strength = <16>;
+
+		/* Has external pullup */
+		bias-disable;
+	};
+};
+
 &qup_i2c4_default {
 	pinconf {
 		pins = "gpio115", "gpio116";
-		drive-strength = <2>;
+		drive-strength = <16>;
+
+		/* Has external pullup */
+		bias-disable;
+	};
+};
+
+&qup_i2c9_default {
+	pinconf {
+		pins = "gpio46", "gpio47";
+		drive-strength = <16>;
+
+		/* Has external pullup */
+		bias-disable;
+	};
+};
+
+&qup_i2c10_default {
+	pinconf {
+		pins = "gpio86", "gpio87";
+		drive-strength = <16>;
 
 		/* Has external pullup */
 		bias-disable;
