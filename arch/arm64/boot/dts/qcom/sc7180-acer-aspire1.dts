@@ -4,6 +4,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+#include <dt-bindings/soc/qcom,memshare.h>
 
 #include "sc7180.dtsi"
 
@@ -40,6 +41,11 @@
 
 		mba_mem: memory@94400000 {
 			reg = <0x0 0x94400000 0x0 0x200000>;
+			no-map;
+		};
+
+		memshare_mpss_mem: mpss@94600000 {
+			reg = <0x0 0x94600000 0x0 0x500000>;
 			no-map;
 		};
 	};
@@ -135,6 +141,31 @@
 		pinctrl-0 = <&amp_sd_mode_default>;
 		sdmode-gpios = <&tlmm 23 GPIO_ACTIVE_HIGH>;
 		#sound-dai-cells = <0>;
+	};
+
+	memshare: memshare {
+		compatible = "qcom,memshare";
+		qcom,legacy-client = <&memshare_gps>;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		mpss@0 {
+			reg = <MEMSHARE_PROC_MPSS_V01>;
+			qcom,qrtr-node = <0>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			memshare_gps: gps@0 {
+				reg = <0>;
+			};
+
+			unknown@0 {
+				reg = <1>;
+				memory-region = <&memshare_mpss_mem>;
+			};
+		};
 	};
 };
 
