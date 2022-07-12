@@ -271,6 +271,8 @@
 	compatible = "qcom,sdm845-sndcard";
 	model = "aspire1";
 
+		status = "disabled";
+
 	audio-routing =
 		"Headphone Jack", "HPOL",
 		"Headphone Jack", "HPOR";
@@ -333,7 +335,7 @@
 };
 
 &remoteproc_mpss {
-	status = "okay";
+	//status = "okay";
 };
 
 &remoteproc_adsp {
